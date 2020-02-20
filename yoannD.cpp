@@ -4,6 +4,8 @@
 
 using namespace std;
 
+#define ADD 3
+
 int main() {
 	cout.tie(nullptr);
 	ios::sync_with_stdio(false);
@@ -23,14 +25,21 @@ int main() {
 			librairies[b].push_back(i);
 			books[i].push_back(b);
 		}
-		q.push({N[i], i});
+		N[i] *= 3;
 	}
+	for(int i = 0; i < B; i++) {
+		if(librairies[i].size()==2) {
+			for(int l : librairies[i]) N[l] += ADD;
+		}
+	}
+	for(int i = 0; i < L; i++) q.push({N[i], i});
 	
 	int t = 0;
 	vector<int> Y;
 	vector<bool> seen(B, false);
 	vector<bool> seenL(L, false);
 	vector<vector<int>> k;
+	int score = 0;
 	while(t < D) {
 		pair<int, int> a;
 		while(true) {
@@ -40,8 +49,6 @@ int main() {
 		}
 		q.pop();
 		int lib = a.second;
-		// cout << N[lib] << endl;
-		// return 0;
 		Y.push_back(lib);
 		k.push_back({});
 		seenL[lib] = true;
@@ -49,10 +56,14 @@ int main() {
 			if(!seen[b]) {
 				seen[b] = true;
 				for(int l : librairies[b]) {
-					N[l] --;
+					N[l] -= 3;
+					if(librairies[b].size() == 2) N[l] -= ADD;
 					if(!seenL[l]) q.push({N[l], l});
 				}
-				if(t+2+k.back().size() < D) k.back().push_back(b);
+				if(t+2+k.back().size() < D) {
+					k.back().push_back(b);
+					score ++;
+				}
 			}
 		}
 		if(k.back().empty()) {
@@ -64,12 +75,12 @@ int main() {
 
 	int A = k.size();
 	cout << A << "\n";
-	// return 0;
 	for(int i = 0; i < A; i++) {
 		cout << Y[i] << " " << k[i].size() << "\n";
 		for(int b : k[i]) cout << b << " " ;
 		cout << "\n";
 	}
+	cerr << score << endl;
 
 	return 0;
 }
