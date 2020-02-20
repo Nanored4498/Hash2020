@@ -26,3 +26,8 @@ main.o : main.cpp $(HLIBS)
 clean:
 	-rm -f *.o
 	-rm -f *.gch
+
+nemo-%:
+	g++ -Wall -Wextra -std=c++11 nemo.cpp -o nemo
+	./nemo < data/$(subst nemo-,,$@).txt > output-$@
+	head output-$@
