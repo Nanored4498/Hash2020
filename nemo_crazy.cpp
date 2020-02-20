@@ -31,7 +31,7 @@ int main() {
     for(int i = 0; i < L; i++) {
         vector<int> score;
         for(int b = 0; b < N[i]; b++) {
-            score.push_back(S[books[i][b]]);
+            score.push_back(S[b]);
         }
         sort(score.begin(), score.end());
         for(int day = 0; day < D - T[i]; day++) {
@@ -58,17 +58,12 @@ int main() {
 
     for(int i = 0; i < L; i++) {
         int curr_lib = lib_orders[L-i-1].second;
-        vector<double> score;
-        vector<int> bb = books[curr_lib];
-        sort(bb.begin(), bb.end());
+        vector<int> score;
         for(int b = 0; b < N[curr_lib]; b++) {
-            if(b > (D-T[curr_lib])*M[curr_lib]) {
-                score.push_back((double)0.0);
-            }
-            else if(!seen_pass[b]) {
-                score.push_back((double)bb[b]);
+            if(!seen_pass[b]) {
+                score.push_back(S[b]);
                 seen_pass[b] = true;
-            } else score.push_back((double)(bb[b])/(double)((librairies[books[curr_lib][b]].size())));
+            } else score.push_back(0);
         }
         sort(score.begin(), score.end());
         for(int day = 0; day < D - T[curr_lib]; day++) {
@@ -80,7 +75,7 @@ int main() {
 
             if(day*M[curr_lib] > N[curr_lib]-1) break;
         }
-        score_each_lib_second_pass[curr_lib] *= (double)(M[curr_lib]*M[curr_lib])/((double)(T[curr_lib]*T[curr_lib]*T[curr_lib]));
+        score_each_lib_second_pass[curr_lib] *= (double)(M[curr_lib]*M[curr_lib]*N[curr_lib])/((double)(T[curr_lib]*T[curr_lib]*T[curr_lib]*T[curr_lib]));
     }
 
     vector<pair<double,int>> lib_orders_bis;
@@ -107,7 +102,7 @@ int main() {
     vector<bool> sent(B, false);
 
     for(int i = L-1; i >= 0; i--) {
-        int current_lib = lib_orders_bis[i].second;
+        int current_lib = lib_orders[i].second;
         curr_day += T[current_lib];
         if(curr_day>= D) break;
         
