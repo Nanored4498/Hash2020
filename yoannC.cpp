@@ -1,59 +1,62 @@
 #include <iostream>
 #include <vector>
 #include <queue>
-#include <random>
-#include <time.h>
+#include <cmath>
 
 using namespace std;
 
-#define MUL 500
-#define ADD 500
+#define ADD 90
+#define POW 1.0
 
 int main() {
 	cout.tie(nullptr);
 	ios::sync_with_stdio(false);
-	srand(time(nullptr));
 
 	int B, L, D;
 	cin >> B >> L >> D;
 	vector<int> S(B);
 	vector<int> N(L), T(L), M(L);
 	vector<vector<int>> books(L), librairies(B);
-	priority_queue<pair<int, int>> q;
-	for(int i = 0; i < B; i++) cin >> S[i];
+	priority_queue<pair<double, int>> q;
+	vector<double> score_lib(L, 0);
+	double mean_score = 0;
+	for(int i = 0; i < B; i++) {
+		cin >> S[i];
+		mean_score += S[i];
+	}
+	mean_score /= B;
 	for(int i = 0; i < L; i++) {
 		cin >> N[i] >> T[i] >> M[i];
 		int b;
+		int score = 0;
 		for(int j = 0; j < N[i]; j++) {
 			cin >> b;
 			librairies[b].push_back(i);
 			books[i].push_back(b);
+			score_lib[i] += S[b];
 		}
-		N[i] *= MUL;
-		N[i] += rand() % 10;
+		score_lib[i] -= (0.09*mean_score)*double(T[i]);
+		score_lib[i] /= (ADD + pow(double(T[i]), POW));
+		q.push({score_lib[i], i});
 	}
-	for(int i = 0; i < B; i++) {
-		if(librairies[i].size()==2) {
-			for(int l : librairies[i]) N[l] += ADD;
-		}
-	}
-	for(int i = 0; i < L; i++) q.push({N[i], i});
 	
 	int t = 0;
+	int SCORE = 0;
 	vector<int> Y;
 	vector<bool> seen(B, false);
 	vector<bool> seenL(L, false);
 	vector<vector<int>> k;
-	int score = 0;
 	while(t < D) {
-		pair<int, int> a;
-		while(true) {
+		pair<double, int> a;
+		int lib;
+		while(!q.empty()) {
 			a = q.top();
-			if(a.first == N[a.second]) break;
+			lib = a.second;
+			if(t+T[lib]+1 < D && !seenL[lib] && abs(a.first - score_lib[a.second]) < 1e-5) break;
 			q.pop();
 		}
+		if(q.empty()) break;
 		q.pop();
-		int lib = a.second;
 		Y.push_back(lib);
 		k.push_back({});
 		seenL[lib] = true;
@@ -61,21 +64,14 @@ int main() {
 			if(!seen[b]) {
 				seen[b] = true;
 				for(int l : librairies[b]) {
-					N[l] -= MUL;
-					if(librairies[b].size() == 2) N[l] -= ADD;
-					if(!seenL[l]) q.push({N[l], l});
+					score_lib[l] -= double(S[b]) / (ADD + pow(double(T[l]), POW));
+					if(!seenL[l]) q.push({score_lib[l], l});
 				}
-				if(t+2+k.back().size() < D) {
-					k.back().push_back(b);
-					score ++;
-				}
+				k.back().push_back(b);
+				SCORE += S[b];
 			}
 		}
-		if(k.back().empty()) {
-			k.pop_back();
-			Y.pop_back();
-		}
-		t += 2;
+		t += T[lib];
 	}
 
 	int A = k.size();
@@ -85,7 +81,7 @@ int main() {
 		for(int b : k[i]) cout << b << " " ;
 		cout << "\n";
 	}
-	cerr << score*S[0] << endl;
+	cerr << SCORE << endl;
 
 	return 0;
 }
