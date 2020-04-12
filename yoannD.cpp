@@ -1,18 +1,15 @@
 #include <iostream>
 #include <vector>
 #include <queue>
-#include <random>
-#include <time.h>
 
 using namespace std;
 
-#define MUL 500
-#define ADD 500
+#define MUL 5
+#define ADD 5
 
 int main() {
 	cout.tie(nullptr);
 	ios::sync_with_stdio(false);
-	srand(time(nullptr));
 
 	int B, L, D;
 	cin >> B >> L >> D;
@@ -30,7 +27,6 @@ int main() {
 			books[i].push_back(b);
 		}
 		N[i] *= MUL;
-		N[i] += rand() % 10;
 	}
 	for(int i = 0; i < B; i++) {
 		if(librairies[i].size()==2) {

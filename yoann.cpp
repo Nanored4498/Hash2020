@@ -7,8 +7,7 @@
 
 using namespace std;
 
-#define DIVIDE
-
+// compile with DIVIDE for the problem E
 #ifdef DIVIDE
 #define TIME_MUL 0.028
 #define D_POW 1.55
